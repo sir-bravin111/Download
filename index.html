@@ -1,186 +1,776 @@
+ 
+Here is an HTML document that creates a YouTube music downloader and player with trending songs and direct video/playlist support.from sir bravin 
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>𝕾𝖎𝖗 𝕭𝖗𝖆𝖛𝖎𝖓-𝖙𝖊𝖈𝖍 𝕸𝖚𝖘𝖎𝖈 𝕾𝖎𝖙𝖊</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>𝕾𝖎𝖗 𝕭𝖗𝖆𝖛𝖎𝖓 · 𝖀𝖑𝖙𝖎𝖒𝖆𝖙𝖊 𝖄𝖙 𝕸𝖚𝖘𝖎𝖈</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0c12;
+      font-family: 'DM Sans', sans-serif;
+      color: #edeef2;
+      line-height: 1.5;
+    }
+
+    :root {
+      --green: #2bd97c;
+      --green-glow: #1f9a5a;
+      --purple: #b77cff;
+      --muted: #8b8d9b;
+      --card-bg: #13161f;
+      --border: #262b38;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* header */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 12, 18, 0.8);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 4px var(--green));
+    }
+    .logo-text h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff, #b77cff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .logo-text p {
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .header-tag {
+      font-size: 0.85rem;
+      background: #1e1f2c;
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+
+    /* hero */
+    .hero {
+      text-align: center;
+      padding: 48px 24px 40px;
+      background: radial-gradient(circle at 20% 30%, #11161f, #07090e);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(43, 217, 124, 0.15);
+      color: var(--green);
+      border-radius: 60px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      backdrop-filter: blur(4px);
+    }
+    .hero h2 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero h2 span {
+      color: var(--green);
+      border-bottom: 3px solid var(--green);
+    }
+    .hero p {
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 28px;
+    }
+    .toggle-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .toggle-btn {
+      background: #1f222e;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #b9bbce;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active-green {
+      background: var(--green);
+      color: #0a0c12;
+      box-shadow: 0 0 8px var(--green);
+    }
+    .search-form {
+      display: flex;
+      max-width: 700px;
+      margin: 0 auto;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      flex: 1;
+      background: #1a1d29;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      padding: 4px 16px;
+      border: 1px solid var(--border);
+    }
+    .search-icon {
+      font-size: 1.2rem;
+      margin-right: 8px;
+    }
+    .search-input {
+      background: transparent;
+      border: none;
+      padding: 14px 0;
+      width: 100%;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+    }
+    .search-btn {
+      background: var(--green);
+      border: none;
+      padding: 0 32px;
+      border-radius: 60px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.2s;
+    }
+    .hero-hint {
+      margin-top: 18px;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    /* sections */
+    .section {
+      margin: 48px 0;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .section-icon {
+      font-size: 1.8rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 22px;
+    }
+    .video-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      overflow: hidden;
+      transition: 0.2s;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--green);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .card-img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+    .card-info {
+      padding: 14px;
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-channel {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .center-msg {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--green);
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* playlist viewer */
+    #playlist-viewer {
+      display: none;
+      margin: 30px 0;
+    }
+    .back-btn {
+      background: #252a39;
+      border: none;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    /* MODAL */
+    #player-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
+    }
+    #player-modal.open {
+      visibility: visible;
+      opacity: 1;
+    }
+    .pm-box {
+      background: #11141f;
+      max-width: 780px;
+      width: 90%;
+      border-radius: 36px;
+      border: 1px solid #2a2f3e;
+      box-shadow: 0 30px 40px rgba(0,0,0,0.5);
+      transition: all 0.2s;
+    }
+    .pm-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .pm-title {
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+    .pm-channel {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .pm-header-btns {
+      display: flex;
+      gap: 10px;
+    }
+    .pm-icon-btn {
+      background: #1f2533;
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+    .pm-body {
+      padding: 24px;
+    }
+    .pm-big-thumb {
+      width: 100%;
+      border-radius: 20px;
+      max-height: 280px;
+      object-fit: cover;
+    }
+    .pm-footer {
+      padding: 18px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .pm-download-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .dl-btn {
+      background: #1e293b;
+      border: none;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .dl-btn.mp3 { background: #2b3b2b; color: #b3ffcf; }
+    .dl-btn.mp4 { background: #2b2b48; }
+    .dl-btn:hover { filter: brightness(1.1); }
+    .pm-menu-wrap {
+      position: relative;
+    }
+    .pm-menu {
+      position: absolute;
+      right: 0;
+      top: 45px;
+      background: #1e212e;
+      border-radius: 20px;
+      width: 210px;
+      display: none;
+      flex-direction: column;
+      z-index: 200;
+      border: 1px solid #343a4a;
+    }
+    .pm-menu.open {
+      display: flex;
+    }
+    .pm-menu-item {
+      background: none;
+      border: none;
+      color: white;
+      padding: 12px 16px;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .pm-submenu {
+      display: none;
+      background: #2a2f3e;
+      border-radius: 14px;
+      margin: 4px;
+    }
+    .pm-submenu-item {
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    /* now playing bar */
+    #now-playing-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: #0e111be6;
+      backdrop-filter: blur(18px);
+      border-radius: 60px;
+      border: 1px solid var(--green);
+      display: none;
+      z-index: 99;
+    }
+    .npb-inner {
+      display: flex;
+      align-items: center;
+      padding: 10px 18px;
+      gap: 16px;
+    }
+    .npb-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      object-fit: cover;
+    }
+    .npb-info {
+      flex: 1;
+    }
+    .npb-title {
+      font-weight: 700;
+    }
+    .npb-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      padding: 36px 20px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      .hero h2 { font-size: 1.8rem; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ── HEADER ── -->
-  <header>
-    <div class="container header-inner">
-      <a class="logo" href="/">
-        <div class="logo-icon">🎵</div>
-        <div class="logo-text">
-          <h1>𝕾𝖎𝖗 𝕭𝖗𝖆𝖛𝖎𝖓</h1>
-          <p>𝕸𝖚𝖘𝖎𝖈 𝕾𝖎𝖙𝖊</p>
-        </div>
-      </a>
-      <p class="header-tag">𝕻𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 <strong style="color:var(--green)">𝖘𝖎𝖗 𝖇𝖗𝖆𝖛𝖎𝖓</strong></p>
-    </div>
-  </header>
-
-  <!-- ── HERO ── -->
-  <section class="hero">
-    <div class="hero-badge">📈 Smart YT Downloader</div>
-    <h2>Download &amp; Stream <span>YouTube Music</span></h2>
-    <p>Search by name, or paste any YouTube link to stream &amp; download in MP3 or MP4.</p>
-
-    <div class="toggle-wrap">
-      <button class="toggle-btn active-green" id="toggle-video"    onclick="setMode('video')">🎵 Videos</button>
-      <button class="toggle-btn"             id="toggle-playlist" onclick="setMode('playlist')">📋 Playlists</button>
-    </div>
-
-    <form class="search-form" onsubmit="handleSearch(event)">
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input
-          class="search-input"
-          id="search-input"
-          type="text"
-          placeholder="Search songs, or paste a YouTube link…"
-          autocomplete="off"
-        />
-      </div>
-      <button class="search-btn" type="submit">Search</button>
-    </form>
-    <p class="hero-hint">💡 Paste a YouTube URL to load it directly — videos &amp; playlists supported</p>
-  </section>
-
-  <!-- ── MAIN CONTENT ── -->
-  <main class="container" id="main">
-
-    <!-- Playlist Viewer -->
-    <div id="playlist-viewer">
-      <button class="back-btn" onclick="closePlaylist()">← Back</button>
-      <div class="section-head">
-        <div class="section-icon purple">📋</div>
-        <h3 id="playlist-title">Playlist</h3>
-        <span id="playlist-count" style="font-size:12px;color:var(--muted)"></span>
-      </div>
-      <div id="playlist-grid" class="grid"></div>
-    </div>
-
-    <!-- Search Results -->
-    <div id="results-section" class="section"></div>
-
-    <!-- Trending -->
-    <div id="trending-section" class="section">
-      <div class="section-head">
-        <div class="section-icon">📈</div>
-        <h3>Trending Now</h3>
-      </div>
-      <div id="trending-loading" class="center-msg">
-        <div class="spinner"></div>
-        <p>Loading trending music…</p>
-      </div>
-      <div id="trending-grid" class="grid" style="display:none"></div>
-    </div>
-
-    <!-- Empty State -->
-    <div id="empty-state" class="center-msg" style="display:none">
-      <div class="empty-icon pulse">🎵</div>
-      <p>Search for a song or playlist to get started</p>
-    </div>
-
-  </main>
-
-  <!-- ── PLAYER MODAL ── -->
-  <div id="player-modal">
-    <div class="pm-box">
-
-      <!-- Modal Header -->
-      <div class="pm-header">
-        <div class="pm-header-info">
-          <div class="pm-title"   id="pm-title">Loading…</div>
-          <div class="pm-channel" id="pm-channel"></div>
-        </div>
-
-        <span class="pm-type-badge" id="pm-type-badge"></span>
-
-        <div class="pm-header-btns">
-          <!-- Maximize / Restore -->
-          <button class="pm-icon-btn" id="pm-expand-btn" onclick="toggleExpand()" title="Maximize" aria-label="Maximize player">⛶</button>
-
-          <!-- 3-dot menu -->
-          <div class="pm-menu-wrap">
-            <button class="pm-icon-btn" onclick="toggleModalMenu(event)" title="More options" aria-label="More options">⋮</button>
-            <div class="pm-menu" id="pm-menu">
-              <button class="pm-menu-item" id="pm-menu-dl-mp3" onclick="modalDlMp3(event)">
-                <span class="mi-icon">⬇</span> Download MP3
-              </button>
-              <div class="pm-menu-divider"></div>
-              <button class="pm-menu-item" onclick="toggleModalQualitySubmenu(event)">
-                <span class="mi-icon">🎬</span> Download MP4
-                <span class="mi-arrow">▸</span>
-              </button>
-              <div class="pm-submenu" id="pm-submenu">
-                <button class="pm-submenu-item" onclick="modalDlMp4('360',event)"><span>360p</span><span class="quality-tag">Low</span></button>
-                <button class="pm-submenu-item" onclick="modalDlMp4('480',event)"><span>480p</span><span class="quality-tag">SD</span></button>
-                <button class="pm-submenu-item" onclick="modalDlMp4('720',event)"><span>720p</span><span class="quality-tag">HD</span></button>
-                <button class="pm-submenu-item" onclick="modalDlMp4('1080',event)"><span>1080p</span><span class="quality-tag">Full HD</span></button>
-              </div>
-              <div class="pm-menu-divider"></div>
-              <button class="pm-menu-item" onclick="window.open('https://youtube.com/watch?v='+modalVideoId,'_blank');document.getElementById('pm-menu').classList.remove('open')">
-                <span class="mi-icon">↗</span> Open on YouTube
-              </button>
-            </div>
-          </div>
-
-          <!-- Close -->
-          <button class="pm-icon-btn" onclick="closePlayerModal()" title="Close" aria-label="Close player">✕</button>
-        </div>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="pm-body">
-        <!-- Audio mode -->
-        <div id="pm-thumb-wrap">
-          <img id="pm-thumb" class="pm-big-thumb" src="" alt="" />
-          <iframe id="pm-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen style="height:80px"></iframe>
-        </div>
-        <!-- Video mode -->
-        <div id="pm-video-wrap">
-          <!-- iframe injected by JS -->
-        </div>
-      </div>
-
-      <!-- Modal Footer: Download Buttons -->
-      <div class="pm-footer">
-        <span class="pm-footer-label">⬇ Download</span>
-        <div id="pm-download-btns" class="pm-download-btns"></div>
-      </div>
-
-    </div>
+<header>
+  <div class="container header-inner">
+    <a class="logo" href="#">
+      <div class="logo-icon">🎧</div>
+      <div class="logo-text"><h1>𝕾𝖎𝖗 𝕭𝖗𝖆𝖛𝖎𝖓</h1><p>YT DOWNLOADER · LATEST VIBES</p></div>
+    </a>
+    <p class="header-tag">⚡ 𝕻𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 <strong style="color:var(--green)">𝖘𝖎𝖗 𝖇𝖗𝖆𝖛𝖎𝖓</strong></p>
   </div>
+</header>
 
-  <!-- ── NOW PLAYING BAR ── -->
-  <div id="now-playing-bar">
-    <div class="npb-inner">
-      <button id="npb-reopen">
-        <img id="npb-thumb" class="npb-thumb" src="" alt="" />
-        <div class="npb-info">
-          <div class="npb-title"   id="npb-title"></div>
-          <div class="npb-channel" id="npb-channel"></div>
-          <div class="npb-hint">Tap to reopen player</div>
-        </div>
-      </button>
-      <div class="npb-embed">
-        <iframe id="npb-iframe" src="" allow="autoplay; encrypted-media"></iframe>
-      </div>
-      <button class="npb-close" onclick="stopPlayer()">✕</button>
-    </div>
+<section class="hero">
+  <div class="hero-badge">🎬 DOWNLOAD ANY YOUTUBE VIDEO / MP3</div>
+  <h2>Stream & Download <span>YouTube Music</span><br/>with one click</h2>
+  <p>Paste any YouTube link — video or playlist — or search the latest hits. High-quality MP3 & MP4 downloads.</p>
+  <div class="toggle-wrap">
+    <button class="toggle-btn active-green" id="toggle-video" onclick="setMode('video')">🎵 Videos</button>
+    <button class="toggle-btn" id="toggle-playlist" onclick="setMode('playlist')">📋 Playlists</button>
   </div>
+  <form class="search-form" onsubmit="handleSearch(event)">
+    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-input" type="text" placeholder="Search songs, artist or paste YouTube link..." autocomplete="off"/></div>
+    <button class="search-btn" type="submit">Search</button>
+  </form>
+  <p class="hero-hint">💡 Paste YouTube URL (video or playlist) → instant download + playback</p>
+</section>
 
-  <!-- ── FOOTER ── -->
-  <footer>
-    <p>© 2026 𝖘𝖎𝖗 𝖇𝖗𝖆𝖛𝖎𝖓 𝕸𝖚𝖘𝖎𝖈 𝕾𝖎𝖙𝖊 — 𝕻𝖔𝖜𝖊𝖗𝖊𝖉 𝖇𝖞 <span>𝖘𝖎𝖗 𝖇𝖗𝖆𝖛𝖎𝖓</span></p>
-  </footer>
+<main class="container" id="main">
+  <div id="playlist-viewer"><button class="back-btn" onclick="closePlaylist()">← Back</button><div class="section-head"><div class="section-icon purple">📋</div><h3 id="playlist-title">Playlist</h3><span id="playlist-count"></span></div><div id="playlist-grid" class="grid"></div></div>
+  <div id="results-section" class="section"></div>
+  <div id="trending-section" class="section">
+    <div class="section-head"><div class="section-icon">🔥</div><h3>Latest & Trending Songs</h3></div>
+    <div id="trending-loading" class="center-msg"><div class="spinner"></div><p>Loading hottest tracks ...</p></div>
+    <div id="trending-grid" class="grid" style="display:none"></div>
+  </div>
+  <div id="empty-state" class="center-msg" style="display:none"><div class="empty-icon pulse">🎵</div><p>Search for a song or paste YouTube URL</p></div>
+</main>
 
-  <script src="js/app.js"></script>
+<div id="player-modal"><div class="pm-box"><div class="pm-header"><div><div class="pm-title" id="pm-title">—</div><div class="pm-channel" id="pm-channel"></div></div><span class="pm-type-badge" id="pm-type-badge"></span><div class="pm-header-btns"><button class="pm-icon-btn" id="pm-expand-btn" onclick="toggleExpand()">⛶</button><div class="pm-menu-wrap"><button class="pm-icon-btn" onclick="toggleModalMenu(event)">⋮</button><div class="pm-menu" id="pm-menu"><button class="pm-menu-item" id="pm-menu-dl-mp3" onclick="modalDlMp3(event)"><span>⬇</span> Download MP3</button><div class="pm-menu-divider"></div><div class="pm-menu-item" onclick="toggleModalQualitySubmenu(event)"><span>🎬 Download MP4</span><span>▸</span></div><div class="pm-submenu" id="pm-submenu"><button class="pm-submenu-item" onclick="modalDlMp4('360',event)">360p <span class="quality-tag">Low</span></button><button class="pm-submenu-item" onclick="modalDlMp4('480',event)">480p <span>SD</span></button><button class="pm-submenu-item" onclick="modalDlMp4('720',event)">720p <span>HD</span></button><button class="pm-submenu-item" onclick="modalDlMp4('1080',event)">1080p <span>Full HD</span></button></div><div class="pm-menu-divider"></div><button class="pm-menu-item" onclick="windowOpenYT()">↗ Open on YouTube</button></div></div><button class="pm-icon-btn" onclick="closePlayerModal()">✕</button></div></div><div class="pm-body"><img id="pm-thumb" class="pm-big-thumb" src="" alt="thumbnail"/><div id="pm-video-wrap"></div></div><div class="pm-footer"><span class="pm-footer-label">⬇ DIRECT DOWNLOAD</span><div id="pm-download-btns" class="pm-download-btns"></div></div></div></div>
+<div id="now-playing-bar"><div class="npb-inner"><button id="npb-reopen" style="background:none;border:none;display:flex;gap:12px;align-items:center;flex:1;"><img id="npb-thumb" class="npb-thumb"/><div class="npb-info"><div class="npb-title" id="npb-title"></div><div class="npb-channel" id="npb-channel"></div><div class="npb-hint">▶ Tap to reopen</div></div></button><div class="npb-embed"><iframe id="npb-iframe" allow="autoplay; encrypted-media" style="width:0;height:0;display:none"></iframe></div><button class="npb-close" onclick="stopPlayer()">✕</button></div></div>
+
+<footer><p>© 2026 𝖘𝖎𝖗 𝖇𝖗𝖆𝖛𝖎𝖓 𝕸𝖚𝖘𝖎𝖈 𝕾𝖎𝖙𝖊 — fast downloads from YouTube · latest hits updated 🔥</p></footer>
+
+<script>
+  // ---------- GLOBALS & API ----------
+  let currentMode = 'video'; // video or playlist
+  let currentVideoId = null;
+  let currentVideoData = null; // store title, channel, thumb
+  let currentStreamsCache = {};
+  let modalOpenVideoId = null;
+  let activePlayerEmbed = null;
+
+  // API endpoints (free, CORS enabled)
+  const LEMNOS_API = "https://yt.lemnoslife.com/noKey";
+  const PIPED_API = "https://pipedapi.kavin.rocks";
+
+  // Helper: fetch JSON with timeout
+  async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    return await res.json();
+  }
+
+  // Extract video or playlist ID from YouTube URL
+  function extractYoutubeId(url) {
+    const videoMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (videoMatch) return { type: 'video', id: videoMatch[1] };
+    const playlistMatch = url.match(/[&?]list=([a-zA-Z0-9_-]+)/);
+    if (playlistMatch) return { type: 'playlist', id: playlistMatch[1] };
+    return null;
+  }
+
+  // SEARCH via LemnosLife
+  async function searchYouTube(query) {
+    const url = `${LEMNOS_API}/search?part=snippet&type=video&maxResults=24&q=${encodeURIComponent(query)}`;
+    const data = await fetchJSON(url);
+    if (!data.items) return [];
+    return data.items.map(item => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      channel: item.snippet.channelTitle,
+      thumb: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url,
+    }));
+  }
+
+  // TRENDING / latest songs (using trending endpoint)
+  async function fetchTrending() {
+    try {
+      const url = `${LEMNOS_API}/trending?region=US&maxResults=24`;
+      const data = await fetchJSON(url);
+      if (data.videos) {
+        return data.videos.map(v => ({
+          id: v.videoId,
+          title: v.title,
+          channel: v.author,
+          thumb: v.thumbnails?.[0]?.url || `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg`,
+        }));
+      }
+    } catch (e) { console.warn(e); }
+    // fallback: search "latest music hits"
+    return searchYouTube("top hits 2026 trending");
+  }
+
+  // PLAYLIST items
+  async function fetchPlaylist(playlistId) {
+    const url = `${LEMNOS_API}/playlist?id=${playlistId}`;
+    const data = await fetchJSON(url);
+    if (!data.items) return [];
+    return data.items.map(item => ({
+      id: item.videoId,
+      title: item.title,
+      channel: item.author,
+      thumb: item.thumbnails?.[0]?.url || `https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`,
+    }));
+  }
+
+  // get STREAMS from Piped for downloads
+  async function getStreams(videoId) {
+    if (currentStreamsCache[videoId]) return currentStreamsCache[videoId];
+    const url = `${PIPED_API}/streams/${videoId}`;
+    const data = await fetchJSON(url);
+    const audioStream = data.audioStreams?.sort((a,b) => b.bitrate - a.bitrate)[0];
+    const videoStreams = data.videoStreams || [];
+    const sortedVideo = videoStreams.filter(v => v.videoOnly === false).sort((a,b) => b.height - a.height);
+    const streams = { audio: audioStream, videos: sortedVideo };
+    currentStreamsCache[videoId] = streams;
+    return streams;
+  }
+
+  async function downloadBlob(url, filename) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) { alert("Download failed: try again or right-click save as"); }
+  }
+
+  async function downloadMp3FromVideo(videoId, title) {
+    const streams = await getStreams(videoId);
+    if (streams.audio) {
+      await downloadBlob(streams.audio.url, `${title.replace(/[^a-z0-9]/gi, '_')}.mp3`);
+    } else alert("No audio stream available");
+  }
+
+  async function downloadMp4FromVideo(videoId, qualityLabel, title) {
+    const streams = await getStreams(videoId);
+    const targetHeight = parseInt(qualityLabel);
+    const video = streams.videos.find(v => v.height === targetHeight) || streams.videos[0];
+    if (video) await downloadBlob(video.url, `${title.replace(/[^a-z0-9]/gi, '_')}_${qualityLabel}p.mp4`);
+    else alert(`No ${qualityLabel}p stream found`);
+  }
+
+  // render grid
+  function renderVideoGrid(containerId, items, clickHandler) {
+    const container = document.getElementById(containerId);
+    if (!items.length) { container.innerHTML = '<div class="center-msg">✨ No results</div>'; return; }
+    container.innerHTML = items.map(v => `
+      <div class="video-card" data-id="${v.id}" data-title="${escapeHtml(v.title)}" data-channel="${escapeHtml(v.channel)}" data-thumb="${v.thumb}">
+        <img class="card-img" src="${v.thumb}" loading="lazy" onerror="this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'"/>
+        <div class="card-info"><div class="card-title">${escapeHtml(v.title)}</div><div class="card-channel">${escapeHtml(v.channel)}</div></div>
+      </div>
+    `).join('');
+    container.querySelectorAll('.video-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id, title = card.dataset.title, channel = card.dataset.channel, thumb = card.dataset.thumb;
+        clickHandler({ id, title, channel, thumb });
+      });
+    });
+  }
+
+  function escapeHtml(str) { return str?.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}) || ''; }
+
+  // Show modal & download buttons, embed player
+  async function openPlayer(video) {
+    currentVideoId = video.id;
+    currentVideoData = video;
+    document.getElementById('pm-title').innerText = video.title;
+    document.getElementById('pm-channel').innerText = video.channel;
+    document.getElementById('pm-thumb').src = video.thumb;
+    document.getElementById('pm-thumb').style.display = 'block';
+    document.getElementById('pm-video-wrap').innerHTML = `<iframe style="width:100%; height:280px; border-radius:20px;" src="https://www.youtube.com/embed/${video.id}?autoplay=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    modalOpenVideoId = video.id;
+    // load download buttons
+    const streams = await getStreams(video.id);
+    const btnsDiv = document.getElementById('pm-download-btns');
+    btnsDiv.innerHTML = `<button class="dl-btn mp3" id="modal-mp3-btn">🎵 MP3 (Audio)</button>`;
+    document.getElementById('modal-mp3-btn')?.addEventListener('click', (e) => { e.stopPropagation(); downloadMp3FromVideo(video.id, video.title); });
+    if (streams.videos.length) {
+      const qualities = [...new Set(streams.videos.map(v => v.height).filter(h => h >= 360))].sort((a,b)=>a-b);
+      qualities.forEach(q => {
+        const btn = document.createElement('button');
+        btn.className = 'dl-btn mp4';
+        btn.innerText = `📹 MP4 ${q}p`;
+        btn.addEventListener('click', (e) => { e.stopPropagation(); downloadMp4FromVideo(video.id, q.toString(), video.title); });
+        btnsDiv.appendChild(btn);
+      });
+    } else btnsDiv.innerHTML += `<button class="dl-btn" disabled>No video streams</button>`;
+    // show modal and now playing
+    document.getElementById('player-modal').classList.add('open');
+    updateNowPlayingBar(video);
+  }
+
+  function updateNowPlayingBar(video) {
+    const bar = document.getElementById('now-playing-bar');
+    document.getElementById('npb-title').innerText = video.title;
+    document.getElementById('npb-channel').innerText = video.channel;
+    document.getElementById('npb-thumb').src = video.thumb;
+    const iframe = document.getElementById('npb-iframe');
+    iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&enablejsapi=1`;
+    bar.style.display = 'block';
+    document.getElementById('npb-reopen').onclick = () => openPlayer(video);
+  }
+
+  function stopPlayer() {
+    document.getElementById('now-playing-bar').style.display = 'none';
+    const iframe = document.getElementById('npb-iframe');
+    if (iframe) iframe.src = '';
+  }
+
+  function closePlayerModal() { document.getElementById('player-modal').classList.remove('open'); }
+  function toggleModalMenu(e) { e.stopPropagation(); const menu = document.getElementById('pm-menu'); menu.classList.toggle('open'); }
+  function toggleModalQualitySubmenu(e) { e.stopPropagation(); const sub = document.getElementById('pm-submenu'); sub.style.display = sub.style.display === 'flex' ? 'none' : 'flex'; }
+  function modalDlMp3(e) { e.preventDefault(); if(modalOpenVideoId && currentVideoData) downloadMp3FromVideo(modalOpenVideoId, currentVideoData.title); closeModalMenu(); }
+  function modalDlMp4(quality, e) { e.preventDefault(); if(modalOpenVideoId && currentVideoData) downloadMp4FromVideo(modalOpenVideoId, quality, currentVideoData.title); closeModalMenu(); }
+  function windowOpenYT() { if(modalOpenVideoId) window.open(`https://youtube.com/watch?v=${modalOpenVideoId}`); closeModalMenu(); }
+  function closeModalMenu() { const menu = document.getElementById('pm-menu'); menu?.classList.remove('open'); document.getElementById('pm-submenu').style.display = 'none'; }
+  function toggleExpand() { const modal = document.querySelector('.pm-box'); modal.style.maxWidth = modal.style.maxWidth === '95%' ? '780px' : '95%'; }
+
+  // handle search (URL or text)
+  async function handleSearch(e) {
+    e.preventDefault();
+    const query = document.getElementById('search-input').value.trim();
+    if (!query) return;
+    const extracted = extractYoutubeId(query);
+    if (extracted) {
+      if (extracted.type === 'video') {
+        const videoInfo = { id: extracted.id, title: "YouTube Video", channel: "Loading...", thumb: `https://i.ytimg.com/vi/${extracted.id}/hqdefault.jpg` };
+        try {
+          const streams = await getStreams(extracted.id);
+          const infoUrl = `${PIPED_API}/streams/${extracted.id}`;
+          const data = await fetchJSON(infoUrl);
+          videoInfo.title = data.title || "Video";
+          videoInfo.channel = data.uploader || "YouTube";
+        } catch(e) {}
+        openPlayer(videoInfo);
+      } else if (extracted.type === 'playlist') {
+        currentMode = 'playlist';
+        await loadPlaylistById(extracted.id);
+      }
+      return;
+    }
+    // normal search
+    document.getElementById('results-section').innerHTML = '<div class="center-msg"><div class="spinner"></div> Searching...</div>';
+    const results = await searchYouTube(query);
+    document.getElementById('trending-section').style.display = 'none';
+    document.getElementById('results-section').innerHTML = '';
+    if (results.length) renderVideoGrid('results-section', results, (v) => openPlayer(v));
+    else document.getElementById('results-section').innerHTML = '<div class="center-msg">😔 No results found</div>';
+  }
+
+  async function loadPlaylistById(playlistId) {
+    document.getElementById('playlist-viewer').style.display = 'block';
+    document.getElementById('trending-section').style.display = 'none';
+    document.getElementById('results-section').style.display = 'none';
+    const items = await fetchPlaylist(playlistId);
+    document.getElementById('playlist-title').innerText = `Playlist • ${items.length} tracks`;
+    renderVideoGrid('playlist-grid', items, (v) => openPlayer(v));
+  }
+
+  function closePlaylist() {
+    document.getElementById('playlist-viewer').style.display = 'none';
+    document.getElementById('trending-section').style.display = 'block';
+    document.getElementById('results-section').style.display = 'block';
+    loadTrending();
+  }
+
+  async function loadTrending() {
+    try {
+      const trending = await fetchTrending();
+      document.getElementById('trending-loading').style.display = 'none';
+      const grid = document.getElementById('trending-grid');
+      grid.style.display = 'grid';
+      renderVideoGrid('trending-grid', trending, (v) => openPlayer(v));
+    } catch(e) { document.getElementById('trending-loading').innerHTML = '<p>⚠️ Could not load trending</p>'; }
+  }
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('toggle-video').classList.toggle('active-green', mode === 'video');
+    document.getElementById('toggle-playlist').classList.toggle('active-green', mode === 'playlist');
+    if (mode === 'video') closePlaylist();
+    else document.getElementById('search-input').placeholder = "Paste playlist link or search playlist name...";
+  }
+
+  // initial load
+  window.onload = () => {
+    loadTrending();
+    document.getElementById('playlist-viewer').style.display = 'none';
+    document.addEventListener('click', () => { const menu = document.getElementById('pm-menu'); if(menu) menu.classList.remove('open'); document.getElementById('pm-submenu').style.display = 'none'; });
+  };
+  window.setMode = setMode; window.handleSearch = handleSearch; window.closePlaylist = closePlaylist;
+  window.openPlayer = openPlayer; window.closePlayerModal = closePlayerModal; window.toggleExpand = toggleExpand;
+  window.toggleModalMenu = toggleModalMenu; window.toggleModalQualitySubmenu = toggleModalQualitySubmenu;
+  window.modalDlMp3 = modalDlMp3; window.modalDlMp4 = modalDlMp4; window.windowOpenYT = windowOpenYT;
+  window.stopPlayer = stopPlayer;
+</script>
 </body>
 </html>
