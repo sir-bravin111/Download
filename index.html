@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBED TECH Music Site</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="container header-inner">
+      <a class="logo" href="/">
+        <div class="logo-icon">🎵</div>
+        <div class="logo-text">
+          <h1>OBED TECH</h1>
+          <p>Music Site</p>
+        </div>
+      </a>
+      <p class="header-tag">Powered by <strong style="color:var(--green)">Obed Tech</strong></p>
+    </div>
+  </header>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-badge">📈 Smart YT Downloader</div>
+    <h2>Download &amp; Stream <span>YouTube Music</span></h2>
+    <p>Search by name, or paste any YouTube link to stream &amp; download in MP3 or MP4.</p>
+
+    <div class="toggle-wrap">
+      <button class="toggle-btn active-green" id="toggle-video"    onclick="setMode('video')">🎵 Videos</button>
+      <button class="toggle-btn"             id="toggle-playlist" onclick="setMode('playlist')">📋 Playlists</button>
+    </div>
+
+    <form class="search-form" onsubmit="handleSearch(event)">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          id="search-input"
+          type="text"
+          placeholder="Search songs, or paste a YouTube link…"
+          autocomplete="off"
+        />
+      </div>
+      <button class="search-btn" type="submit">Search</button>
+    </form>
+    <p class="hero-hint">💡 Paste a YouTube URL to load it directly — videos &amp; playlists supported</p>
+  </section>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="container" id="main">
+
+    <!-- Playlist Viewer -->
+    <div id="playlist-viewer">
+      <button class="back-btn" onclick="closePlaylist()">← Back</button>
+      <div class="section-head">
+        <div class="section-icon purple">📋</div>
+        <h3 id="playlist-title">Playlist</h3>
+        <span id="playlist-count" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <div id="playlist-grid" class="grid"></div>
+    </div>
+
+    <!-- Search Results -->
+    <div id="results-section" class="section"></div>
+
+    <!-- Trending -->
+    <div id="trending-section" class="section">
+      <div class="section-head">
+        <div class="section-icon">📈</div>
+        <h3>Trending Now</h3>
+      </div>
+      <div id="trending-loading" class="center-msg">
+        <div class="spinner"></div>
+        <p>Loading trending music…</p>
+      </div>
+      <div id="trending-grid" class="grid" style="display:none"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="center-msg" style="display:none">
+      <div class="empty-icon pulse">🎵</div>
+      <p>Search for a song or playlist to get started</p>
+    </div>
+
+  </main>
+
+  <!-- ── PLAYER MODAL ── -->
+  <div id="player-modal">
+    <div class="pm-box">
+
+      <!-- Modal Header -->
+      <div class="pm-header">
+        <div class="pm-header-info">
+          <div class="pm-title"   id="pm-title">Loading…</div>
+          <div class="pm-channel" id="pm-channel"></div>
+        </div>
+
+        <span class="pm-type-badge" id="pm-type-badge"></span>
+
+        <div class="pm-header-btns">
+          <!-- Maximize / Restore -->
+          <button class="pm-icon-btn" id="pm-expand-btn" onclick="toggleExpand()" title="Maximize" aria-label="Maximize player">⛶</button>
+
+          <!-- 3-dot menu -->
+          <div class="pm-menu-wrap">
+            <button class="pm-icon-btn" onclick="toggleModalMenu(event)" title="More options" aria-label="More options">⋮</button>
+            <div class="pm-menu" id="pm-menu">
+              <button class="pm-menu-item" id="pm-menu-dl-mp3" onclick="modalDlMp3(event)">
+                <span class="mi-icon">⬇</span> Download MP3
+              </button>
+              <div class="pm-menu-divider"></div>
+              <button class="pm-menu-item" onclick="toggleModalQualitySubmenu(event)">
+                <span class="mi-icon">🎬</span> Download MP4
+                <span class="mi-arrow">▸</span>
+              </button>
+              <div class="pm-submenu" id="pm-submenu">
+                <button class="pm-submenu-item" onclick="modalDlMp4('360',event)"><span>360p</span><span class="quality-tag">Low</span></button>
+                <button class="pm-submenu-item" onclick="modalDlMp4('480',event)"><span>480p</span><span class="quality-tag">SD</span></button>
+                <button class="pm-submenu-item" onclick="modalDlMp4('720',event)"><span>720p</span><span class="quality-tag">HD</span></button>
+                <button class="pm-submenu-item" onclick="modalDlMp4('1080',event)"><span>1080p</span><span class="quality-tag">Full HD</span></button>
+              </div>
+              <div class="pm-menu-divider"></div>
+              <button class="pm-menu-item" onclick="window.open('https://youtube.com/watch?v='+modalVideoId,'_blank');document.getElementById('pm-menu').classList.remove('open')">
+                <span class="mi-icon">↗</span> Open on YouTube
+              </button>
+            </div>
+          </div>
+
+          <!-- Close -->
+          <button class="pm-icon-btn" onclick="closePlayerModal()" title="Close" aria-label="Close player">✕</button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="pm-body">
+        <!-- Audio mode -->
+        <div id="pm-thumb-wrap">
+          <img id="pm-thumb" class="pm-big-thumb" src="" alt="" />
+          <iframe id="pm-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen style="height:80px"></iframe>
+        </div>
+        <!-- Video mode -->
+        <div id="pm-video-wrap">
+          <!-- iframe injected by JS -->
+        </div>
+      </div>
+
+      <!-- Modal Footer: Download Buttons -->
+      <div class="pm-footer">
+        <span class="pm-footer-label">⬇ Download</span>
+        <div id="pm-download-btns" class="pm-download-btns"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── NOW PLAYING BAR ── -->
+  <div id="now-playing-bar">
+    <div class="npb-inner">
+      <button id="npb-reopen">
+        <img id="npb-thumb" class="npb-thumb" src="" alt="" />
+        <div class="npb-info">
+          <div class="npb-title"   id="npb-title"></div>
+          <div class="npb-channel" id="npb-channel"></div>
+          <div class="npb-hint">Tap to reopen player</div>
+        </div>
+      </button>
+      <div class="npb-embed">
+        <iframe id="npb-iframe" src="" allow="autoplay; encrypted-media"></iframe>
+      </div>
+      <button class="npb-close" onclick="stopPlayer()">✕</button>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <p>© 2026 OBED TECH Music Site — Powered by <span>Obed Tech</span></p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
